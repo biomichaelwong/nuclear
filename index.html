@@ -204,22 +204,13 @@
       font-weight: 700;
     }
 
-    .start-note,
-    .sequence-note {
+    .start-note {
       margin: 0 0 18px;
       padding: 14px 16px;
       color: #334c57;
       line-height: 1.65;
-      border-left: 5px solid var(--green);
-    }
-
-    .start-note {
       background: #e8f3ef;
-    }
-
-    .sequence-note {
-      background: #f7f2df;
-      border-left-color: var(--yellow);
+      border-left: 5px solid var(--green);
     }
 
     .primary-btn,
@@ -360,13 +351,6 @@
       background: #e5f3ee;
       border-left: 4px solid var(--green);
       border-radius: 3px;
-    }
-
-    .question-number {
-      margin: 0 0 8px;
-      color: var(--red-dark);
-      font-size: 14px;
-      font-weight: 900;
     }
 
     .question-text {
@@ -712,12 +696,6 @@
             系統會重新隨機抽選題目及排列答案選項。
           </p>
 
-          <p class="sequence-note">
-            <strong>出題次序：</strong>
-            首15題按「展板1 × 4、展板2 × 3、展板3 × 3、展板1 × 2、
-            展板2 × 2、展板3 × 1」排列；最後5題從尚未使用的題目中隨機抽選。
-          </p>
-
           <button id="startButton" class="primary-btn start-btn" type="button">
             開始挑戰
           </button>
@@ -751,7 +729,6 @@
 
         <div class="question-area">
           <div id="panelHint" class="panel-hint"></div>
-          <p id="questionNumber" class="question-number"></p>
           <h2 id="questionText" class="question-text"></h2>
           <div id="options" class="options"></div>
           <p id="feedback" class="feedback" aria-live="polite"></p>
@@ -1735,7 +1712,6 @@
     const timer = document.getElementById("timer");
     const timerValue = document.getElementById("timerValue");
     const panelHint = document.getElementById("panelHint");
-    const questionNumber = document.getElementById("questionNumber");
     const questionText = document.getElementById("questionText");
     const optionsElement = document.getElementById("options");
     const feedback = document.getElementById("feedback");
@@ -1783,15 +1759,6 @@
     function buildQuestionSequence() {
       const selectedQuestions = [];
 
-      /*
-        指定次序：
-        第1至4題：展板1
-        第5至7題：展板2
-        第8至10題：展板3
-        第11至12題：展板1
-        第13至14題：展板2
-        第15題：展板3
-      */
       selectedQuestions.push(
         ...getQuestionsByPanel(1, 4, selectedQuestions)
       );
@@ -1816,10 +1783,6 @@
         ...getQuestionsByPanel(3, 1, selectedQuestions)
       );
 
-      /*
-        上述指定次序共有15題。
-        第16至20題從尚未使用的題目中隨機抽選。
-      */
       const unusedQuestions = questionBank.filter((rawQuestion) => {
         return !selectedQuestions.includes(rawQuestion);
       });
@@ -1911,9 +1874,6 @@
 
       panelHint.textContent =
         `提示：請到第 ${question.panel} 幅展板的「${question.section}」部分尋找答案`;
-
-      questionNumber.textContent =
-        `本局第 ${currentNumber} 題｜來自第 ${question.panel} 幅展板`;
 
       questionText.textContent = question.text;
       optionsElement.replaceChildren();
@@ -2033,9 +1993,6 @@
       clearInterval(timerId);
       timerId = null;
 
-      /*
-        把尚未作答的題目加入答案回顧。
-      */
       const answeredCount = responses.length;
       const unansweredQuestions = quizQuestions.slice(answeredCount);
 
@@ -2131,9 +2088,6 @@
     restartButton.addEventListener("click", startQuiz);
     homeButton.addEventListener("click", returnHome);
 
-    /*
-      可使用鍵盤數字鍵1至4選擇答案。
-    */
     document.addEventListener("keydown", (event) => {
       if (
         !quizScreen.classList.contains("active") ||
@@ -2157,9 +2111,6 @@
       }
     });
 
-    /*
-      防止按Esc直接關閉結果視窗，以免學生看不到成績。
-    */
     resultDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
     });
